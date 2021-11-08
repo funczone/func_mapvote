@@ -1,6 +1,8 @@
 # func_mapvote
 A modified version of MapVote for the [func.zone TTT server](https://func.zone/ttt), based off of [tyrantelf's build of MapVote](https://github.com/tyrantelf/gmod-mapvote), originally created by [Willox](https://github.com/willox/). The latest archive of the original thread can be found [here](https://web.archive.org/web/20160607103800/https://facepunch.com/showthread.php?t=1268353).
 
+This addon is based on [this fork](https://github.com/funczone/mapvote_with_previews) of the original mapvote addon. 
+
 ⚠️ **Major work in progress.**
 
 ## Features
