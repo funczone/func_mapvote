@@ -57,37 +57,42 @@ function MapVote.Start(length, current, limit)
 
     if #MapVote.Pools > 0 then error("No map pools configured - you need to add atleast *one*. See MapVote.Pools in sv_mapvote_config.lua for more information.") end
     
-    for _, pool in MapVote.Pools do
-        if pool.goal() == true then
-            for __, map in pool.maps do
-                if MapVote.Maps[map] then pooled_maps[map] = true end
+    for _, pool in pairs(MapVote.Pools) do
+        local good = pool.goal()
+        print("pool: " .. _)
+        print(pool.goal())
+        if good == true then
+            for __, map in pairs(pool.maps) do
+                if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
             end
         end
     end
 
-    for _, p in MapVote.Forced do -- since this is handled by a ulx command, we assume every pool exists
+    for _, p in pairs(MapVote.Forced) do -- since this is handled by a ulx command, we assume every pool exists
         local pool = MapVote.Pools[p]
-        for __, map in pool.maps do
-            if MapVote.Maps[map] then pooled_maps[map] = true end
+        for __, map in pairs(pool.maps) do
+            if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
         end
     end
 
+    PrintTable(pooled_maps)
+
     if #pooled_maps > 0 then
-        for map, _ in RandomPairs(pooled_maps) do
+        for _, map in RandomPairs(pooled_maps) do
             if not current or (current and curmap ~= map) then
                 if not cooldown or (cooldown and not table.HasValue(recentmaps, map)) then
-                    vote_maps[map] = true
+                    table.insert(vote_maps, map)
                     if limit and #vote_maps >= limit then break end
                 end
             end
         end
     else
-        error("No maps got pooled - see MapVote.Pools in sv_mapvote_config.lua for more information.")
+        error("No maps got pooled - see MapVote.Pools in sv_mapvote_config.lua for more information.\n")
     end
     
     net.Start("RAM_MapVoteStart")
         net.WriteUInt(#vote_maps, 32)
-        for map, _ in pairs(vote_maps) do net.WriteString(map) end
+        for _, map in pairs(vote_maps) do net.WriteString(map) end
         net.WriteUInt(length, 32)
     net.Broadcast()
     

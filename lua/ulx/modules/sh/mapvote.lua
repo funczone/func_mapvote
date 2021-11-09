@@ -1,4 +1,6 @@
 local CATEGORY_NAME = "MapVote"
+MapVote.Forced = MapVote.Forced or {}
+
 ------------------------------ VoteMap ------------------------------
 local function mapvote( calling_ply, votetime, should_cancel )
 	if not should_cancel then
@@ -17,21 +19,16 @@ mapvotecmd:defaultAccess( ULib.ACCESS_ADMIN )
 mapvotecmd:help( "Invokes the map vote logic" )
 mapvotecmd:setOpposite( "unmapvote", {_, _, true}, "!unmapvote" )
 
-local curpools = {}
-for pool, _ in pairs(MapVote.Pools) do
-	table.insert(curpools, pool)
-end
-
 -- force map pool
 local function forcemappool(calling_ply, pool, should_unforce)
-	MapVote.Forced = MapVote.Forced or {}
-	if pool not in MapVote.Forced then
+	if MapVote.Forced[pool] ~= nil then
 		ULib.tsayError(calling_ply, "This pool does not exist - use a pool from the help text of the command.")
 	end
 
 	local action
 	if should_unforce then
 		action = "unforced"
+		MapVote.Forced[pool] = nil
 	else
 		action = "forced"
 		table.insert(MapVote.Forced, pool)
@@ -41,5 +38,5 @@ end
 local forcemappoolcmd = ulx.command(CATEGORY_NAME, "forcemappool", forcemappool, "!forcemappool")
 forcemappoolcmd:addParam{ type=ULib.cmds.StringArg, hint="pool", ULib.cmds.takeRestOfLine, completes=curpools }
 forcemappoolcmd:defaultAccess(ULib.ACCESS_ADMIN)
-forcemappoolcmd:help("Forces a map pool to be in play during the next map vote.\n\nCurrent pools: " .. table.concat(pools, ", "))
+forcemappoolcmd:help("Forces a map pool to be in play during the next map vote.\n\nCurrent pools: " .. table.concat(MapVote.Forced, ", "))
 forcemappoolcmd:setOpposite("unforcemappool", {_, _, true}, "!unforcemappool")
