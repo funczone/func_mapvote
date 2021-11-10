@@ -17,8 +17,8 @@ surface.CreateFont("RAM_VoteFontCountdown", {
     shadow = true
 })
 
-surface.CreateFont("RAM_VoteSysButton", 
-{    font = "Marlett",
+surface.CreateFont("RAM_VoteSysButton", {
+    font = "Marlett",
     size = 13,
     weight = 0,
     symbol = true,
@@ -38,24 +38,26 @@ end)
 MapVote.EndTime = 0
 MapVote.Panel = false
 
+local function cleanup()
+    MapVote.Panel.maximButton:Remove()
+    MapVote.Panel.minimButton:Remove()
+    MapVote.Panel:Remove()
+end
+
 net.Receive("RAM_MapVoteStart", function(len, ply)
     MapVote.CurrentMaps = {}
     MapVote.Allow = true
     MapVote.Votes = {}
     
-    local amt = net.ReadUInt(32)
-    
-    for i = 1, amt do
+    local maplength = net.ReadUInt(32)
+    for i = 1, maplength do
         local map = net.ReadString()
-        
         MapVote.CurrentMaps[#MapVote.CurrentMaps + 1] = map
     end
     
     MapVote.EndTime = CurTime() + net.ReadUInt(32)
 
-    if(IsValid(MapVote.Panel)) then
-        MapVote.Panel:Remove()
-    end
+    if IsValid(MapVote.Panel) then cleanup() end
 
     MapVote.Panel = vgui.Create("VoteScreen")
     MapVote.Panel:SetMaps(MapVote.CurrentMaps)
@@ -83,11 +85,7 @@ net.Receive("RAM_MapVoteUpdate", function()
 end)
 
 net.Receive("RAM_MapVoteCancel", function()
-    if IsValid(MapVote.Panel) then
-        MapVote.Panel.maximButton:Remove()
-        MapVote.Panel.minimButton:Remove()
-        MapVote.Panel:Remove()
-    end
+    if IsValid(MapVote.Panel) then cleanup() end
 end)
 
 net.Receive("RTV_Delay", function()
@@ -153,8 +151,6 @@ function PANEL:Init()
 end
 
 function PANEL:PerformLayout()
-    local cx, cy = chat.GetChatBoxPos()
-    
     self:SetPos(0, 0)
     self:SetSize(ScrW(), ScrH())
     
@@ -198,10 +194,7 @@ function PANEL:PerformLayout()
     end
 end
 
-local heart_mat = Material("icon16/heart.png")
 local star_mat = Material("icon16/star.png")
-local shield_mat = Material("icon16/shield.png")
-
 function PANEL:AddVoter(voter)
     for k, v in pairs(self.Voters) do
         if(v.Player and v.Player == voter) then
@@ -339,11 +332,6 @@ function PANEL:GetMapButton(id)
 end
 
 function PANEL:Paint()
-    --Derma_DrawBackgroundBlur(self)
-    
-    local CenterY = ScrH() / 2
-    local CenterX = ScrW() / 2
-    
     surface.SetDrawColor(0, 0, 0, 200)
     surface.DrawRect(0, 0, ScrW(), ScrH())
 end
@@ -352,8 +340,7 @@ function PANEL:Flash(id)
     self:SetVisible(true)
 
     local bar = self:GetMapButton(id)
-    
-    if(IsValid(bar)) then
+    if IsValid(bar) then
         timer.Simple( 0.0, function() bar.bgColor = Color( 0, 255, 255 ) surface.PlaySound( "hl1/fvox/blip.wav" ) end )
         timer.Simple( 0.2, function() bar.bgColor = nil end )
         timer.Simple( 0.4, function() bar.bgColor = Color( 0, 255, 255 ) surface.PlaySound( "hl1/fvox/blip.wav" ) end )
