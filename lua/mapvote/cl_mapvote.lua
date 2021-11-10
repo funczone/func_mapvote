@@ -84,6 +84,8 @@ end)
 
 net.Receive("RAM_MapVoteCancel", function()
     if IsValid(MapVote.Panel) then
+        MapVote.Panel.maximButton:Remove()
+        MapVote.Panel.minimButton:Remove()
         MapVote.Panel:Remove()
     end
 end)
@@ -114,36 +116,26 @@ function PANEL:Init()
     self.mapList:EnableHorizontal(true)
     self.mapList:EnableVerticalScrollbar()
     
-    self.closeButton = vgui.Create("DButton", self.Canvas)
-    self.closeButton:SetText("")
-    self.closeButton.Paint = function(panel, w, h)
-        derma.SkinHook("Paint", "WindowCloseButton", panel, w, h)
-    end
-
-    --[[ self.closeButton.DoClick = function()
-        self:SetVisible(false)
-    end ]]
-
-    self.maximButton = vgui.Create("DButton", self.Canvas)
-    self.maximButton:SetText("")
-    self.maximButton:SetDisabled(true)
-    self.maximButton.Paint = function(panel, w, h)
-        derma.SkinHook("Paint", "WindowMaximizeButton", panel, w, h)
+    self.maximButton = vgui.Create("DButton")
+    self.maximButton:SetText("+")
+    self.maximButton.Paint = function(s, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(255, 255, 255, 127))
     end
     self.maximButton.DoClick = function()
         self:SetVisible(true)
         self.maximButton:SetVisible(false)
+        self.minimButton:SetVisible(true)
     end
 
-    self.minimButton = vgui.Create("DButton", self.Canvas)
-    self.minimButton:SetText("")
-    --self.minimButton:SetDisabled(true)
-    self.minimButton.Paint = function(panel, w, h)
-        derma.SkinHook("Paint", "WindowMinimizeButton", panel, w, h)
+    self.minimButton = vgui.Create("DButton")
+    self.minimButton:SetText("-")
+    self.minimButton.Paint = function(s, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(255, 255, 255, 127))
     end
-    self.closeButton.DoClick = function()
+    self.minimButton.DoClick = function()
         self:SetVisible(false)
         self.maximButton:SetVisible(true)
+        self.minimButton:SetVisible(false)
     end
 
     if MapVote.Previews.Enabled then
@@ -177,18 +169,12 @@ function PANEL:PerformLayout()
     self.mapList:StretchToParent(0, 90, 0, 0)
     self.mapList:SetZPos(2)
 
-    local buttonPos = 640 + extra - 31 * 3
-
-    --[[ self.closeButton:SetPos(buttonPos - 31 * 0, 4)
-    self.closeButton:SetSize(31, 31)
-    self.closeButton:SetVisible(true) ]]
-
-    self.maximButton:SetPos(buttonPos - 31 * 0, 4)
-    self.maximButton:SetSize(31, 31)
+    self.maximButton:SetPos((ScrW() - 24) - 2, 2)
+    self.maximButton:SetSize(24, 20)
     self.maximButton:SetVisible(false)
 
-    self.minimButton:SetPos(buttonPos - 31 * 0, 4)
-    self.minimButton:SetSize(31, 31)
+    self.minimButton:SetPos((ScrW() - 24) - 2, 2)
+    self.minimButton:SetSize(24, 20)
     self.minimButton:SetVisible(true)
 
     -- note to all who view this; positioning this w/ correct scaling was hell

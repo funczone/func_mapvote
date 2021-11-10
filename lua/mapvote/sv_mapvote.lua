@@ -59,8 +59,6 @@ function MapVote.Start(length, current, limit)
     
     for _, pool in pairs(MapVote.Pools) do
         local good = pool.goal()
-        print("pool: " .. _)
-        print(pool.goal())
         if good == true then
             for __, map in pairs(pool.maps) do
                 if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
@@ -74,8 +72,6 @@ function MapVote.Start(length, current, limit)
             if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
         end
     end
-
-    PrintTable(pooled_maps)
 
     if #pooled_maps > 0 then
         for _, map in RandomPairs(pooled_maps) do

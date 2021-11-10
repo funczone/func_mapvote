@@ -25,12 +25,11 @@ local function forcemappool(calling_ply, pool, should_unforce)
 		ULib.tsayError(calling_ply, "This pool does not exist - use a pool from the help text of the command.")
 	end
 
-	local action
+	local action = "forced"
 	if should_unforce then
 		action = "unforced"
 		MapVote.Forced[pool] = nil
 	else
-		action = "forced"
 		table.insert(MapVote.Forced, pool)
 	end
 	ulx.fancyLogAdmin(calling_ply, true, "#A " .. action .. " map pool \"" .. pool .. "\"" .. action == "forced" and " into " or " from " .. "the map rotation.")

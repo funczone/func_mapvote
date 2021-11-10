@@ -9,14 +9,14 @@ See readme.md for general information.
 ]]
 -- Original config. See: https://github.com/tyrantelf/gmod-mapvote#ttt-and-deathrun-setup
 MapVote.Config = {
-    RTVPlayerCount = 3      -- number, the minimum number of players that need to be online for RTV to work.
-    EnableCooldown = true   -- boolean, whether to remove a map from voting for a while after it's played.
-    MapsBeforeRevote = 3    -- number, the number of maps that must be played before a map is in the vote menu again (if EnableCooldown is true)
-    MapLimit = 24           -- number, the number of maps shown on the vote screen.
-    TimeLimit = 28          -- number, how long the vote is shown for.
-    AllowCurrentMap = false -- boolean, to allow a the current map in the map vote list.
-    ExtraVotePower = 2      -- integer, how much extra vote power a user has
-    Previews = {            -- table, preview settings
+    RTVPlayerCount = 3,      -- number, the minimum number of players that need to be online for RTV to work.
+    EnableCooldown = true,   -- boolean, whether to remove a map from voting for a while after it's played.
+    MapsBeforeRevote = 3,    -- number, the number of maps that must be played before a map is in the vote menu again (if EnableCooldown is true)
+    MapLimit = 24,           -- number, the number of maps shown on the vote screen.
+    TimeLimit = 28,          -- number, how long the vote is shown for.
+    AllowCurrentMap = false, -- boolean, to allow a the current map in the map vote list.
+    ExtraVotePower = 2,      -- number, how much extra vote power a user has
+    Previews = {             -- table, preview settings
         Enabled = true,             -- boolean, are previews enabled?
         ImageExtension = "jpg",     -- string, the image extension each map preview is formatted as
         DBURL = "https://example.com/assets/maps/", -- string, where the images are hosted
