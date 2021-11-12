@@ -1,16 +1,5 @@
 MapVote = {}
 
-function MapVote.HasExtraVotePower(ply)
-	-- Example that gives admins more voting power
-	--[[
-    if ply:IsAdmin() then
-		return true
-	end 
-    ]]
-
-	return false
-end
-
 MapVote.CurrentMaps = {}
 MapVote.Votes = {}
 
@@ -18,6 +7,25 @@ MapVote.Allow = false
 
 MapVote.UPDATE_VOTE = 1
 MapVote.UPDATE_WIN = 3
+
+-- Use this function to give certain players more voting power.
+function MapVote.HasExtraVotePower(ply)
+    --[[
+    if ply:SteamID() == "STEAM_0:1:48971987" then -- :)
+        return true
+    end 
+    ]]
+    return false
+end
+
+-- @todo overwrite old
+hook.Add("Initialize", "MapVoteConfigSetup", function()
+    if SERVER then
+        if not file.IsDir("mapvote", "DATA") then
+            file.CreateDir("mapvote")
+        end
+    end
+end)
 
 if SERVER then
     AddCSLuaFile()
@@ -29,17 +37,3 @@ if SERVER then
 else
     include("mapvote/cl_mapvote.lua")
 end
-
-hook.Add("Initialize", "MapVoteConfigSetup", function()
-    if SERVER then
-
-    end
-    --[[
-        if not file.IsDir( "mapvote", "DATA") then
-        file.CreateDir( "mapvote" )
-    end
-    if not file.Exists( "mapvote/config.txt", "DATA" ) then
-        file.Write( "mapvote/config.txt", util.TableToJSON(MapVoteConfigDefault) )
-    end
-    ]]
-end)

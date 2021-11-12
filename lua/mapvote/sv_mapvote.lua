@@ -4,7 +4,6 @@ util.AddNetworkString("RAM_MapVoteCancel")
 util.AddNetworkString("RTV_Delay")
 util.AddNetworkString("RAM_Init")
 
-MapVote.Continued = false
 MapVote.Forced = {} -- forced map pools
 
 net.Receive("RAM_MapVoteUpdate", function(len, ply)
@@ -45,7 +44,7 @@ function MapVote.Start(length, current, limit)
     net.Start("RAM_Init")
         net.WriteBool(MapVote.Config.Previews.Enabled)
         if MapVote.Config.Previews and MapVote.Config.Previews.Enabled then
-            net.WriteString(MapVote.Config.Previews.DBURL or "")
+            net.WriteString(MapVote.Config.Previews.URL or "")
             net.WriteString(MapVote.Config.Previews.ImageExtension or "")
             net.WriteBool(MapVote.Config.Previews.InitializeWithCurrentMap or true)
         end

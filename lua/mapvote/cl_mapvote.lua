@@ -2,6 +2,30 @@
 Change this to another base64-encoded image to change the background image!
 ]]
 local errimg = "data:image/png;base64,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"
+local html = [[
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                background-color: #222222
+            }
+            #preview {
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <img id='preview' src=']] .. errimg .. [[' onerror='err(this)'>
+        <script>
+            function err(a) {
+                a.src = ']] .. errimg .. [['
+            }
+        </script>
+    </body>
+</html>
+]]
 
 surface.CreateFont("RAM_VoteFont", {
     font = "Trebuchet MS",
@@ -31,7 +55,7 @@ net.Receive("RAM_Init", function(len, ply)
     local previews = net.ReadBool()
     if previews then
         MapVote.Previews.Enabled = true
-        MapVote.Previews.DBURL = net.ReadString()
+        MapVote.Previews.URL = net.ReadString()
         MapVote.Previews.ImageExtension = net.ReadString()
         MapVote.Previews.InitializeWithCurrentMap = net.ReadBool()
     end
@@ -69,19 +93,19 @@ end)
 net.Receive("RAM_MapVoteUpdate", function()
     local update_type = net.ReadUInt(3)
     
-    if(update_type == MapVote.UPDATE_VOTE) then
+    if update_type == MapVote.UPDATE_VOTE then
         local ply = net.ReadEntity()
         
-        if(IsValid(ply)) then
+        if IsValid(ply) then
             local map_id = net.ReadUInt(32)
             MapVote.Votes[ply:SteamID()] = map_id
         
-            if(IsValid(MapVote.Panel)) then
+            if IsValid(MapVote.Panel) then
                 MapVote.Panel:AddVoter(ply)
             end
         end
-    elseif(update_type == MapVote.UPDATE_WIN) then      
-        if(IsValid(MapVote.Panel)) then
+    elseif update_type == MapVote.UPDATE_WIN then      
+        if IsValid(MapVote.Panel) then
             MapVote.Panel:Flash(net.ReadUInt(32))
         end
     end
@@ -92,11 +116,10 @@ net.Receive("RAM_MapVoteCancel", function()
 end)
 
 net.Receive("RTV_Delay", function()
-    chat.AddText(Color( 102,255,51 ), "[MapVote]", Color( 255,255,255 ), " The vote has been rocked, map vote will begin on round end.")
+    chat.AddText(Color(102, 255, 51), "[MapVote]", Color(255, 255, 255), " The vote has been rocked, map vote will begin on round end.")
 end)
 
 local PANEL = {}
-
 function PANEL:Init()
     self:ParentToHUD()
     
@@ -142,13 +165,10 @@ function PANEL:Init()
     end
 
     if MapVote.Previews.Enabled then
-        local html = "<html><head><style>body { margin: 0; background-color: #222222 } #preview { height: 100%; width: 100%; }</style></head><body><img id='preview' src='" .. errimg .. "' onerror='err(this)'><script>function err(a) { a.src = '" .. errimg .. "' };</script></body></html>"
-
         self.mapPreview = vgui.Create("DHTML", self.Canvas)
         self.mapPreview:SetHTML(html)
-
         if MapVote.Previews.InitializeWithCurrentMap then
-            self.mapPreview:RunJavascript("document.getElementById('preview').src = '" .. MapVote.Previews.DBURL .. game.GetMap() .. "." .. MapVote.Previews.ImageExtension .. "'")
+            self.mapPreview:RunJavascript("document.getElementById('preview').src = '" .. MapVote.Previews.URL .. game.GetMap() .. "." .. MapVote.Previews.ImageExtension .. "'")
         end
     end
 
@@ -202,7 +222,7 @@ end
 local star_mat = Material("icon16/star.png")
 function PANEL:AddVoter(voter)
     for k, v in pairs(self.Voters) do
-        if(v.Player and v.Player == voter) then
+        if v.Player and v.Player == voter then
             return false
         end
     end
@@ -244,25 +264,25 @@ function PANEL:Think()
     end
     
     for k, v in pairs(self.Voters) do
-        if(not IsValid(v.Player)) then
+        if not IsValid(v.Player) then
             v:Remove()
         else
-            if(not MapVote.Votes[v.Player:SteamID()]) then
+            if not MapVote.Votes[v.Player:SteamID()] then
                 v:Remove()
             else
                 local bar = self:GetMapButton(MapVote.Votes[v.Player:SteamID()])
                 
-                if(MapVote.HasExtraVotePower(v.Player)) then
+                if MapVote.HasExtraVotePower(v.Player) then
                     bar.NumVotes = bar.NumVotes + 2
                 else
                     bar.NumVotes = bar.NumVotes + 1
                 end
                 
-                if(IsValid(bar)) then
+                if IsValid(bar) then
                     local CurrentPos = Vector(v.x, v.y, 0)
                     local NewPos = Vector((bar.x + bar:GetWide()) - 21 * bar.NumVotes - 2, bar.y + (bar:GetTall() * 0.5 - 10), 0)
                     
-                    if(not v.CurPos or v.CurPos ~= NewPos) then -- new map
+                    if not v.CurPos or v.CurPos ~= NewPos then -- new map
                         v:MoveTo(NewPos.x, NewPos.y, 0.3)
                         v.CurPos = NewPos
                     end
@@ -273,7 +293,7 @@ function PANEL:Think()
     
     local timeLeft = math.Round(math.Clamp(MapVote.EndTime - CurTime(), 0, math.huge))
     
-    self.countDown:SetText(tostring(timeLeft or 0).." seconds")
+    self.countDown:SetText(tostring(timeLeft or 0) .. " seconds")
     self.countDown:SizeToContents()
     self.countDown:CenterHorizontal()
 end
@@ -288,7 +308,7 @@ function PANEL:SetMaps(maps)
         
         button.DoClick = function()
             if MapVote.Previews.Enabled then
-                local previewurl = MapVote.Previews.DBURL .. v .. "." .. MapVote.Previews.ImageExtension
+                local previewurl = MapVote.Previews.URL .. v .. "." .. MapVote.Previews.ImageExtension
                 self.mapPreview:RunJavascript("document.getElementById('preview').src = '" .. previewurl .. "'")
             end
 
@@ -303,7 +323,7 @@ function PANEL:SetMaps(maps)
             button.Paint = function(s, w, h)
                 local col = Color(255, 255, 255, 10)
                 
-                if(button.bgColor) then
+                if button.bgColor then
                     col = button.bgColor
                 end
                 
@@ -330,7 +350,7 @@ end
 
 function PANEL:GetMapButton(id)
     for k, v in pairs(self.mapList:GetItems()) do
-        if(v.ID == id) then return v end
+        if v.ID == id then return v end
     end
     
     return false
@@ -346,12 +366,12 @@ function PANEL:Flash(id)
 
     local bar = self:GetMapButton(id)
     if IsValid(bar) then
-        timer.Simple( 0.0, function() bar.bgColor = Color( 0, 255, 255 ) surface.PlaySound( "hl1/fvox/blip.wav" ) end )
-        timer.Simple( 0.2, function() bar.bgColor = nil end )
-        timer.Simple( 0.4, function() bar.bgColor = Color( 0, 255, 255 ) surface.PlaySound( "hl1/fvox/blip.wav" ) end )
-        timer.Simple( 0.6, function() bar.bgColor = nil end )
-        timer.Simple( 0.8, function() bar.bgColor = Color( 0, 255, 255 ) surface.PlaySound( "hl1/fvox/blip.wav" ) end )
-        timer.Simple( 1.0, function() bar.bgColor = Color( 100, 100, 100 ) end )
+        timer.Simple(0.0, function() bar.bgColor = Color(0, 255, 255) surface.PlaySound("hl1/fvox/blip.wav") end)
+        timer.Simple(0.2, function() bar.bgColor = nil end)
+        timer.Simple(0.4, function() bar.bgColor = Color(0, 255, 255) surface.PlaySound("hl1/fvox/blip.wav") end)
+        timer.Simple(0.6, function() bar.bgColor = nil end)
+        timer.Simple(0.8, function() bar.bgColor = Color(0, 255, 255) surface.PlaySound("hl1/fvox/blip.wav") end)
+        timer.Simple(1.0, function() bar.bgColor = Color(100, 100, 100) end)
     end
 end
 
