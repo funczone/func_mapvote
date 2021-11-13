@@ -4,6 +4,7 @@ MapVote.CurrentMaps = {}
 MapVote.Votes = {}
 
 MapVote.Allow = false
+MapVote.Color = Color(255, 118, 20)
 
 MapVote.UPDATE_VOTE = 1
 MapVote.UPDATE_WIN = 3

@@ -6,6 +6,25 @@ util.AddNetworkString("RAM_Init")
 
 MapVote.Forced = {} -- forced map pools
 
+hook.Add("Initialize", function()
+    net.Start("RAM_Init")
+        net.WriteBool(MapVote.Config.Previews.Enabled)
+        if MapVote.Config.Previews.Enabled then
+            net.WriteString(MapVote.Config.Previews.URL or "")
+            net.WriteString(MapVote.Config.Previews.ImageExtension or "")
+            net.WriteBool(MapVote.Config.Previews.InitializeWithCurrentMap or true)
+        end
+
+        -- @todo why doesnt a table.Size() function exist
+        local size = 0
+        for k, v in pairs(MapVote.Pools) do size = size + 1 end
+        net.WriteUInt(size, 32)
+        for pool, _ in pairs(MapVote.Pools) do
+            net.WriteString(pool)
+        end
+    net.Broadcast()
+end)
+
 net.Receive("RAM_MapVoteUpdate", function(len, ply)
     if(MapVote.Allow) then
         if(IsValid(ply)) then

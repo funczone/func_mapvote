@@ -51,6 +51,7 @@ surface.CreateFont("RAM_VoteSysButton", {
 })
 
 MapVote.Previews = {}
+MapVote.Pools = {}
 net.Receive("RAM_Init", function(len, ply)
     local previews = net.ReadBool()
     if previews then
@@ -59,6 +60,11 @@ net.Receive("RAM_Init", function(len, ply)
         MapVote.Previews.ImageExtension = net.ReadString()
         MapVote.Previews.InitializeWithCurrentMap = net.ReadBool()
     end
+
+    local pools = net.ReadUInt(32)
+    for i = 0, pools do
+        table.insert(MapVote.Pools, net.ReadString())
+    end 
 end)
 
 MapVote.EndTime = 0
@@ -116,7 +122,7 @@ net.Receive("RAM_MapVoteCancel", function()
 end)
 
 net.Receive("RTV_Delay", function()
-    chat.AddText(Color(102, 255, 51), "[MapVote]", Color(255, 255, 255), " The vote has been rocked, map vote will begin on round end.")
+    chat.AddText(MapVote.Color, "[MapVote]", Color(255, 255, 255), " The vote has been rocked, map vote will begin on round end.")
 end)
 
 local PANEL = {}
