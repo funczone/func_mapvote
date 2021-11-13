@@ -26,8 +26,9 @@ mapvotecmd:setOpposite( "unmapvote", {_, _, true}, "!unmapvote" )
 # ulx forcemappool
 Forces a map pool to be in play during the next map vote.
 ]]
-local function forcemappool(calling_ply, pool, unforced)
-    local action = unforced and "unforced" or "forced"
+local function forcemappool(calling_ply, pool, should_unforce)
+    print("unforced: " .. tostring(should_unforce))
+    local action = should_unforce and "unforced" or "forced"
 
     if(pool == "") then
         local pools = {}
@@ -43,16 +44,16 @@ local function forcemappool(calling_ply, pool, unforced)
         return
     end
 
-    if not unforced and table.HasValue(MapVote.Forced, pool) then
+    if not should_unforce and table.HasValue(MapVote.Forced, pool) then
         ULib.tsayError(calling_ply, "Pool \"" .. pool .. "\" is already forced into the mapvote!")
         return
-    elseif unforced and not table.HasValue(MapVote.Forced, pool) then
+    elseif should_unforce and not table.HasValue(MapVote.Forced, pool) then
         ULib.tsayError(calling_ply, "Pool " .. pool .. " is not forced into the mapvote!")
         return
     end
 
     if should_unforce then
-        MapVote.Forced[pool] = nil
+        table.RemoveByValue(MapVote.Forced, pool)
     else
         table.insert(MapVote.Forced, pool)
     end
@@ -60,6 +61,7 @@ local function forcemappool(calling_ply, pool, unforced)
 end
 local forcemappoolcmd = ulx.command(CATEGORY_NAME, "forcemappool", forcemappool, "!forcemappool")
 forcemappoolcmd:addParam{ type=ULib.cmds.StringArg, hint="pool", ULib.cmds.takeRestOfLine }
+forcemappoolcmd:addParam{ type=ULib.cmds.BoolArg, invisible=true }
 forcemappoolcmd:defaultAccess(ULib.ACCESS_ADMIN)
 forcemappoolcmd:help("Forces a map pool to be in play during the next map vote.\n\nNo input will print the current map pools to the chat.")
 forcemappoolcmd:setOpposite("unforcemappool", {_, _, true}, "!unforcemappool")
