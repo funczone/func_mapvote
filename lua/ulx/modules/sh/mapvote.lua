@@ -27,7 +27,6 @@ mapvotecmd:setOpposite( "unmapvote", {_, _, true}, "!unmapvote" )
 Forces a map pool to be in play during the next map vote.
 ]]
 local function forcemappool(calling_ply, pool, should_unforce)
-    print("unforced: " .. tostring(should_unforce))
     local action = should_unforce and "unforced" or "forced"
 
     if(pool == "") then
