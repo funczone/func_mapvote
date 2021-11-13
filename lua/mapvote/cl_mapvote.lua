@@ -51,7 +51,6 @@ surface.CreateFont("RAM_VoteSysButton", {
 })
 
 MapVote.Previews = {}
-MapVote.Pools = {}
 net.Receive("RAM_Init", function(len, ply)
     local previews = net.ReadBool()
     if previews then
@@ -60,11 +59,6 @@ net.Receive("RAM_Init", function(len, ply)
         MapVote.Previews.ImageExtension = net.ReadString()
         MapVote.Previews.InitializeWithCurrentMap = net.ReadBool()
     end
-
-    local pools = net.ReadUInt(32)
-    for i = 0, pools do
-        table.insert(MapVote.Pools, net.ReadString())
-    end 
 end)
 
 MapVote.EndTime = 0

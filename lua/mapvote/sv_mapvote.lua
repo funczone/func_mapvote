@@ -14,14 +14,6 @@ hook.Add("Initialize", function()
             net.WriteString(MapVote.Config.Previews.ImageExtension or "")
             net.WriteBool(MapVote.Config.Previews.InitializeWithCurrentMap or true)
         end
-
-        -- @todo why doesnt a table.Size() function exist
-        local size = 0
-        for k, v in pairs(MapVote.Pools) do size = size + 1 end
-        net.WriteUInt(size, 32)
-        for pool, _ in pairs(MapVote.Pools) do
-            net.WriteString(pool)
-        end
     net.Broadcast()
 end)
 
