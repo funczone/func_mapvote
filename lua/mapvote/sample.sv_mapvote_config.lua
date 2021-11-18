@@ -30,7 +30,7 @@ MapVote.RTV = {
     ChatCommands = {  -- array, chat commands that trigger an rtv vote
         "!rtv", "/rtv", "rtv"
     },
-    Wait = 60         -- number, the wait time (how long a player has to wait before voting when the map changes) in seconds.
+    Wait = 60         -- number, the "wait time" (how long a player has to wait before voting when the map changes) in seconds.
 }
 
 --[[
@@ -39,6 +39,8 @@ MapVote.RTV = {
 2) Host a folder on a webserver somewhere that has *direct* links of map preview images you want to display on the mapvote screen - a service like Google Drive will not work. Change `Previews.DBURL` to this folders URL.
   - The images name must be the same as the maps name (and must equal your configured image extension); for example, the map `ttt_xmas_nipperhouse` would be named `ttt_xmas_nipperhouse.jpg` on the webserver. 
 3) Set the `Previews.ImageExtension` table property to the image extension. Note that The images must be all of the same format, and they must be browser friendly; .vtf images will not work.
+
+Shameless plug: Want a host that gives you free webhosting with your server? Check out Nuclear Fallout! https://www.nfoservers.com/order.php?referrer=func ;)
 ]]
 
 --[[
