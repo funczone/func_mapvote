@@ -25,7 +25,7 @@ MapVote.Config = {
 
 -- RTV config.
 MapVote.RTV = {
-    PlayerCount = 3,  -- number, the minimum number of players that need to be online for RTV to work.
+    MinPlayers = 3,   -- number, the minimum number of players that need to be online for RTV to work.
     VoteRatio = 0.66, -- number, what % of the server has to rtv to start a vote. 
     ChatCommands = {  -- array, chat commands that trigger an rtv vote
         "!rtv", "/rtv", "rtv"
