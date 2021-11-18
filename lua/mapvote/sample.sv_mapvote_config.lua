@@ -44,28 +44,22 @@ MapVote.RTV = {
 # Map Pools
 This allows you to add specific maps to your map pool based on certain server conditions.
 
-MapVote.Pools: A table of tables, with each key being a pool ID. Each nested table has the following properties;
-  - "maps": An array of map names in the pool.
-  - "goal": A function run at Mapvote.Start() that determines if the pool is part of the mapvote. Returns `true` if the pool should be part of the next map vote, `false` if not.
-
+MapVote.Pools is a table of functions; the value returned by each function dictates if said pool of maps is part of the mapvote.
 ```lua
 -- example
 MapVote.Pools = {
-    general = { -- this map pool would be part of every mapvote
-        maps = {"ttt_skyscraper"},
-        goal = function()
-            return true
-        end
-    },
-    christmas = { -- this map pool would only be part of the mapvote when the month is december or january
-        maps = {"ttt_xmas_nipperhouse"},
-        goal = function()
-            local month =  os.date("%B", os.time())
-            return month == "December" or month == "January"
-        end
-    }
+    general = function()
+        return true
+    end,
+    christmas = function() -- this map pool would only be part of the mapvote when the month is december or january
+        local month =  os.date("%B", os.time())
+        return month == "December" or month == "January"
+    end
 }
 ```
+It should be noted that if you use ULX or some other admin mod, these maps can still be voted for manually.
+
+As a rule of thumb, you should make sure that the length of all pooled maps equals `MapVote.Config.MapLimit + MapVote.Config.MapsBeforeRevote` at all times.
 ]]
 MapVote.Pools = {}
 
@@ -81,8 +75,14 @@ The user will download each map as they are loaded on the server; a fallback map
 ```lua
 -- example
 MapVote.Maps = {
-    ["ttt_skyscraper"]       = "253328815",
-    ["ttt_xmas_nipperhouse"] = "1149578586"
+    ["ttt_skyscraper"] = {
+        id = "253328815",  -- string. this is the maps workshop id.
+        pooled = "general" -- string, array of strings, or function. this is in which pool the map is pooled. if a function is passed, returning `true` will add it to the pool.
+    },
+    ["ttt_xmas_nipperhouse"] = {
+        id = "1149578586",
+        pooled = "xmas"
+    }
 }
 ```
 ]]

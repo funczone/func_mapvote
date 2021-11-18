@@ -61,28 +61,39 @@ function MapVote.Start(length, current, limit)
         end
     net.Broadcast()
 
-    local pooled_maps = {}
-    local vote_maps = {}
-    local downloaded = file.Find("maps/*.bsp", "GAME")
-
-    if #MapVote.Pools > 0 then error("No map pools configured - you need to add atleast *one*. See MapVote.Pools in sv_mapvote_config.lua for more information.") end
+    local pools = {}
     
-    for _, pool in pairs(MapVote.Pools) do
-        local good = pool.goal()
-        if good == true then
-            for __, map in pairs(pool.maps) do
-                if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
+    -- first off, get the values of our pools
+    for pool, func in pairs(MapVote.Pools) do pools[pool] = func() end
+
+    -- since this is handled by a ulx command, we assume every forced pool exists
+    for _, pool in pairs(MapVote.Forced) do pools[pool] = true end
+
+    -- check which maps are valid for our mapvote
+    local pooled_maps = {}
+    for map, opts in pairs(MapVote.Maps) do
+        local _type = type(opts.pooled)
+        local shouldadd = false
+
+        -- typechecking; opts.pooled can be either a string, array, or function.
+        if _type == "string" then
+            if pools[opts.pooled] then shouldadd = true end
+        elseif _type == "table" then
+            for _, pool in ipairs(opts.pooled) do
+                if pools[pool] then shouldadd = true end
+                break
             end
+        elseif _type == "function" then
+            if opts.pooled() then shouldadd = true end
+        end
+
+        if shouldadd and not table.HasValue(pooled_maps, map) then -- not exactly the most optimized code in the world
+            table.insert(pooled_maps, map)
         end
     end
 
-    for _, p in pairs(MapVote.Forced) do -- since this is handled by a ulx command, we assume every pool exists
-        local pool = MapVote.Pools[p]
-        for __, map in pairs(pool.maps) do
-            if MapVote.Maps[map] and (not table.HasValue(pooled_maps, map)) then table.insert(pooled_maps, map) end
-        end
-    end
-
+    -- randomly select from our pooled maps and make sure map cooldown is handled 
+    local vote_maps = {}
     if #pooled_maps > 0 then
         for _, map in RandomPairs(pooled_maps) do
             if not current or (current and curmap ~= map) then
@@ -96,6 +107,7 @@ function MapVote.Start(length, current, limit)
         error("No maps got pooled - see MapVote.Pools in sv_mapvote_config.lua for more information.\n")
     end
     
+    local downloaded = file.Find("maps/*.bsp", "GAME")
     net.Start("RAM_MapVoteStart")
         net.WriteUInt(#vote_maps, 32)
         for _, map in pairs(vote_maps) do net.WriteString(map) end
