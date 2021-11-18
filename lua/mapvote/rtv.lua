@@ -3,7 +3,7 @@ RTV.TotalVotes = 0
 RTV._ActualWait = CurTime() + RTV.Wait
 
 function RTV.ShouldChange()
-    return RTV.TotalVotes >= math.Round(#player.GetAll() * 0.66)
+    return RTV.TotalVotes >= math.Round(#player.GetAll() * RTV.VoteRatio)
 end
 
 function RTV.RemoveVote()
@@ -16,19 +16,19 @@ function RTV.Start()
         net.Broadcast()
 
         hook.Add("TTTEndRound", "MapvoteDelayed", function()
-            MapVote.Start(nil, nil, nil)
+            MapVote.Start()
         end)
     elseif GAMEMODE_NAME == "deathrun" then
         net.Start("RTV_Delay")
         net.Broadcast()
 
         hook.Add("RoundEnd", "MapvoteDelayed", function()
-            MapVote.Start(nil, nil, nil)
+            MapVote.Start()
         end)
     else
         PrintMessage(HUD_PRINTTALK, "The vote has been rocked, map vote imminent!")
         timer.Simple(4, function()
-            MapVote.Start(nil, nil, nil)
+            MapVote.Start()
         end)
     end
 end
@@ -39,7 +39,7 @@ function RTV.AddVote( ply )
         RTV.TotalVotes = RTV.TotalVotes + 1
         ply.hasRTVd = true
         MsgN(ply:Nick().." has voted to Rock the Vote.")
-        PrintMessage(HUD_PRINTTALK, ply:Nick() .. " has voted to Rock the Vote. (" .. RTV.TotalVotes .. "/" .. math.Round(#player.GetAll() * 0.66) .. ")")
+        PrintMessage(HUD_PRINTTALK, ply:Nick() .. " has voted to Rock the Vote. (" .. RTV.TotalVotes .. "/" .. math.Round(#player.GetAll() * RTV.VoteRatio) .. ")")
         if RTV.ShouldChange() then
             RTV.Start()
         end
@@ -73,7 +73,7 @@ function RTV.CanVote( ply )
         return false, "There has already been a vote, the map is going to change!"
     end
 
-    if plyCount < RTV.PlayerCount then
+    if plyCount < RTV.MinPlayers then
         return false, "You need more players before you can rock the vote!"
     end
 
