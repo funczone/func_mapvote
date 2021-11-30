@@ -6,27 +6,13 @@ util.AddNetworkString("RAM_MapVoteCancel")
 util.AddNetworkString("RTV_Delay")
 util.AddNetworkString("RAM_Init")
 
-hook.Add("Initialize", function()
-    net.Start("RAM_Init")
-        net.WriteBool(MapVote.Config.Previews.Enabled)
-        if MapVote.Config.Previews.Enabled then
-            net.WriteString(MapVote.Config.Previews.URL or "")
-            net.WriteString(MapVote.Config.Previews.ImageExtension or "")
-            net.WriteBool(MapVote.Config.Previews.InitializeWithCurrentMap or true)
-        end
-    net.Broadcast()
-end)
-
 net.Receive("RAM_MapVoteUpdate", function(len, ply)
     if MapVote.Allow and IsValid(ply) then
         local update_type = net.ReadUInt(3)
-
         if update_type == MapVote.UPDATE_VOTE then
             local map_id = net.ReadUInt(32)
-
             if MapVote.CurrentMaps[map_id] then
                 MapVote.Votes[ply:SteamID()] = map_id
-
                 net.Start("RAM_MapVoteUpdate")
                     net.WriteUInt(MapVote.UPDATE_VOTE, 3)
                     net.WriteEntity(ply)
@@ -135,12 +121,12 @@ end
 
 concommand.Add("mapvote_debug", function(ply, cmd, args, argsstr)
     local maps = MapVote.PoolMaps(false, nil, nil, nil, args[1] == "1", true)
-    print("[MapVote] === POOLABLE MAPS ===")
-    print(table.concat(maps, ", "))
+    print("[MapVote] === " .. #maps.pooled .. " POOLABLE MAPS ===")
+    print(table.concat(maps.pooled, ", "))
 
     if #maps.undownloaded > 0 then
         print("\n[MapVote] WARNING: " .. #maps.undownloaded .. " maps are not located on the server!")
-        print(table.concat(maps, ", "))
+        print(table.concat(maps.undownloaded, ", "))
     end
 end, nil, "Prints some debug information about the currently possibly-pooled maps.\nPass \"1\" as an argument to ignore the current player count.")
 
