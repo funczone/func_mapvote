@@ -38,7 +38,7 @@ function RTV.AddVote( ply )
     if RTV.CanVote(ply) then -- @todo not sure if this if block is needed at all. function is only ran from CountVote which already calls this
         RTV.TotalVotes = RTV.TotalVotes + 1
         ply.hasRTVd = true
-        MsgN(ply:Nick().." has voted to Rock the Vote.")
+        MsgN(ply:Nick() .. " has voted to Rock the Vote.")
         PrintMessage(HUD_PRINTTALK, ply:Nick() .. " has voted to Rock the Vote. (" .. RTV.TotalVotes .. "/" .. math.Round(#player.GetAll() * RTV.VoteRatio) .. ")")
         if RTV.ShouldChange() then
             RTV.Start()
@@ -60,7 +60,7 @@ end)
 
 function RTV.CanVote( ply )
     local plyCount = #player.GetAll()
-    
+
     if RTV._ActualWait >= CurTime() then
         return false, "You must wait a bit before voting!"
     end

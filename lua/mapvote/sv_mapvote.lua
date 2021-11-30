@@ -18,22 +18,20 @@ hook.Add("Initialize", function()
 end)
 
 net.Receive("RAM_MapVoteUpdate", function(len, ply)
-    if(MapVote.Allow) then
-        if(IsValid(ply)) then
-            local update_type = net.ReadUInt(3)
-            
-            if(update_type == MapVote.UPDATE_VOTE) then
-                local map_id = net.ReadUInt(32)
-                
-                if(MapVote.CurrentMaps[map_id]) then
-                    MapVote.Votes[ply:SteamID()] = map_id
-                    
-                    net.Start("RAM_MapVoteUpdate")
-                        net.WriteUInt(MapVote.UPDATE_VOTE, 3)
-                        net.WriteEntity(ply)
-                        net.WriteUInt(map_id, 32)
-                    net.Broadcast()
-                end
+    if MapVote.Allow and IsValid(ply) then
+        local update_type = net.ReadUInt(3)
+
+        if update_type == MapVote.UPDATE_VOTE then
+            local map_id = net.ReadUInt(32)
+
+            if MapVote.CurrentMaps[map_id] then
+                MapVote.Votes[ply:SteamID()] = map_id
+
+                net.Start("RAM_MapVoteUpdate")
+                    net.WriteUInt(MapVote.UPDATE_VOTE, 3)
+                    net.WriteEntity(ply)
+                    net.WriteUInt(map_id, 32)
+                net.Broadcast()
             end
         end
     end
@@ -65,13 +63,13 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
     local curmap = game.GetMap()
     local curply = #player.GetAll()
     local pools = {}
-    
+
     -- Check (and force) our pool values.
     for pool, test in pairs(MapVote.Pools) do pools[pool] = test() end
     for _, pool in pairs(MapVote.Forced)   do pools[pool] = true   end
 
     local maps = {
-        pooled = {}
+        pooled = {},
         undownloaded = {} -- for debug purposes
     }
 
@@ -80,7 +78,7 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
         !!! IF YOU'RE ADDING PARAMETERS TO MAPS, CHECK THEM IN THIS LOOP !!!
         @todo this is not the most optimized code in the world, and probably warrants a rewrite.
     ]]
-    local p = _debug and pairs or RandomPairs 
+    local p = _debug and pairs or RandomPairs
     for map, opts in p(MapVote.Maps) do
         local shouldadd
 
@@ -175,22 +173,22 @@ function MapVote.Start(length, current, limit)
         for _, map in pairs(vote_maps) do net.WriteString(map) end
         net.WriteUInt(length, 32)
     net.Broadcast()
-    
+
     MapVote.Allow = true
     MapVote.CurrentMaps = vote_maps
     MapVote.Votes = {}
-    
+
     timer.Create("RAM_MapVote", length, 1, function()
         MapVote.Allow = false
         local map_results = {}
-        
+
         for k, v in pairs(MapVote.Votes) do
             if not map_results[v] then
                 map_results[v] = 0
             end
-            
+
             for k2, v2 in pairs(player.GetAll()) do
-                if(v2:SteamID() == k) then
+                if v2:SteamID() == k then
                     if MapVote.HasExtraVotePower(v2) then
                         map_results[v] = map_results[v] + extra
                     else
@@ -198,9 +196,8 @@ function MapVote.Start(length, current, limit)
                     end
                 end
             end
-            
         end
-        
+
         if #recentmaps == cooldownnum then
             table.remove(recentmaps)
         end
@@ -208,16 +205,16 @@ function MapVote.Start(length, current, limit)
         if not table.HasValue(recentmaps, curmap) then
             table.insert(recentmaps, 1, curmap)
         end
-    
+
         file.Write("mapvote/recentmaps.txt", util.TableToJSON(recentmaps))
 
         local winner = table.GetWinningKey(map_results) or 1
-        
+
         net.Start("RAM_MapVoteUpdate")
             net.WriteUInt(MapVote.UPDATE_WIN, 3)
             net.WriteUInt(winner, 32)
         net.Broadcast()
-        
+
         local map = MapVote.CurrentMaps[winner]
 
         timer.Simple(4, function()
@@ -245,6 +242,6 @@ function MapVote.Cancel()
         net.Start("RAM_MapVoteCancel")
         net.Broadcast()
 
-        timer.Destroy("RAM_MapVote")
+        timer.Remove("RAM_MapVote")
     end
 end

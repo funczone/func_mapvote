@@ -21,10 +21,8 @@ end
 
 -- @todo overwrite old
 hook.Add("Initialize", "MapVoteConfigSetup", function()
-    if SERVER then
-        if not file.IsDir("mapvote", "DATA") then
-            file.CreateDir("mapvote")
-        end
+    if SERVER and not file.IsDir("mapvote", "DATA") then
+        file.CreateDir("mapvote")
     end
 end)
 

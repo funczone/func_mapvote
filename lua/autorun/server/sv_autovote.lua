@@ -4,11 +4,11 @@ hook.Add("Initialize", "AutoMapVote", function()
             -- Check for mapswitch
             local rounds_left = math.max(0, GetGlobalInt("ttt_rounds_left", 6) - 1)
             SetGlobalInt("ttt_rounds_left", rounds_left)
- 
+
             local time_left = math.max(0, (GetConVar("ttt_time_limit_minutes"):GetInt() * 60) - CurTime())
             local switchmap = false
             local nextmap = string.upper(game.GetMapNext())
- 
+
             if rounds_left <= 0 then
                 LANG.Msg("limit_round", {mapname = nextmap})
                 switchmap = true
@@ -22,10 +22,10 @@ hook.Add("Initialize", "AutoMapVote", function()
             end
         end
     end
-            
+
     if GAMEMODE_NAME == "deathrun" then
         function RTV.Start()
             MapVote.Start(nil, nil, nil, nil)
         end
     end
-end )
+end)
