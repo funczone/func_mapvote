@@ -1,10 +1,10 @@
+MapVote.Forced = {}
+
 util.AddNetworkString("RAM_MapVoteStart")
 util.AddNetworkString("RAM_MapVoteUpdate")
 util.AddNetworkString("RAM_MapVoteCancel")
 util.AddNetworkString("RTV_Delay")
 util.AddNetworkString("RAM_Init")
-
-MapVote.Forced = {} -- forced map pools
 
 hook.Add("Initialize", function()
     net.Start("RAM_Init")
@@ -42,6 +42,110 @@ end)
 local recentmaps = {}
 if file.Exists("mapvote/recentmaps.txt", "DATA") then recentmaps = util.JSONToTable(file.Read("mapvote/recentmaps.txt", "DATA")) end
 
+local downloaded = file.Find("maps/*.bsp", "GAME")
+
+--[[
+    This function pools maps together based on parameters.
+
+    The boolean `strict` parameter enables strict mode, which does the following; 
+    - Follows MapVote.Config **unless otherwise specified in parameters.**
+    - Does not pool maps that aren't downloaded by the server.
+
+    If strict mode is not enabled and no (or nil) parameters are provided, it will pool maps **ONLY** by if they're part of their respective pools. 
+    @todo maybe want to clean up the default values in MapVote.Start
+]]
+function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debug)
+    strict = strict ~= nil and strict or true
+    limit  = limit or (strict and MapVote.Config.MapLimit or math.huge)
+    addcurrent = addcurrent ~= nil and addcurrent or (strict and MapVote.Config.AllowCurrentMap or true) -- Include the current map?
+    cooldown   = cooldown ~= nil   and cooldown   or (strict and MapVote.Config.EnableCooldown  or false) -- Respect map cooldown?
+    ignoreplys = ignoreplys ~= nil and ignoreplys or (strict and false or true) -- Ignore the servers current playercount?
+    _debug     = _debug ~= nil     and _debug     or false
+
+    local curmap = game.GetMap()
+    local curply = #player.GetAll()
+    local pools = {}
+    
+    -- Check (and force) our pool values.
+    for pool, test in pairs(MapVote.Pools) do pools[pool] = test() end
+    for _, pool in pairs(MapVote.Forced)   do pools[pool] = true   end
+
+    local maps = {
+        pooled = {}
+        undownloaded = {} -- for debug purposes
+    }
+
+    --[[
+        Next, check which maps are valid to be pooled.
+        !!! IF YOU'RE ADDING PARAMETERS TO MAPS, CHECK THEM IN THIS LOOP !!!
+        @todo this is not the most optimized code in the world, and probably warrants a rewrite.
+    ]]
+    local p = _debug and pairs or RandomPairs 
+    for map, opts in p(MapVote.Maps) do
+        local shouldadd
+
+        -- First, check if the map is the current map (and if thats allowed or not).
+        if not addcurrent and (map == curmap) then continue end
+
+        -- Next, check if the server has this map downloaded. This will NOT disallow the map from being pooled unless in strict mode.
+        if not table.HasValue(downloaded, map .. ".bsp") then
+            table.insert(maps.undownloaded, map)
+            if strict then
+                continue
+            end
+        end
+
+        -- Next, check if the maps on cooldown.
+        if cooldown and table.HasValue(recentmaps, map) then continue end
+
+        -- Next, check if the map is in a valid pool. `opts.pooled` can be either a string, array, or function.
+        local _type = type(opts.pooled)
+        if _type == "string" then
+            if pools[opts.pooled] then shouldadd = true end
+        elseif _type == "table" then
+            for _, pool in ipairs(opts.pooled) do
+                if pools[pool] then
+                    shouldadd = true
+                    break
+                end
+            end
+        elseif _type == "function" then
+            if opts.pooled() then shouldadd = true end
+        end
+
+        -- Next, check if the map is of a valid playercount.
+        if not ignoreplys and (opts.size and MapVote.Config.PlayerTolerance ~= nil) then
+            local t = MapVote.Config.PlayerTolerance
+            if (opts.size > curply + t) or (opts.size < curply - t) then
+                shouldadd = false
+            end
+        end
+
+        -- Finally, add the map to the pool if it should be added.
+        if shouldadd and not table.HasValue(maps.pooled, map) then
+            table.insert(maps.pooled, map)
+        end
+
+        if #maps.pooled >= limit then break end
+    end
+
+    if _debug then
+        return maps
+    end
+    return maps.pooled
+end
+
+concommand.Add("mapvote_debug", function(ply, cmd, args, argsstr)
+    local maps = MapVote.PoolMaps(false, nil, nil, nil, args[1] == "1", true)
+    print("[MapVote] === POOLABLE MAPS ===")
+    print(table.concat(maps, ", "))
+
+    if #maps.undownloaded > 0 then
+        print("\n[MapVote] WARNING: " .. #maps.undownloaded .. " maps are not located on the server!")
+        print(table.concat(maps, ", "))
+    end
+end, nil, "Prints some debug information about the currently possibly-pooled maps.\nPass \"1\" as an argument to ignore the current player count.")
+
 function MapVote.Start(length, current, limit)
     length = length or MapVote.Config.TimeLimit or 28
     current = current or MapVote.Config.AllowCurrentMap or false
@@ -61,53 +165,11 @@ function MapVote.Start(length, current, limit)
         end
     net.Broadcast()
 
-    local pools = {}
-    
-    -- first off, get the values of our pools
-    for pool, func in pairs(MapVote.Pools) do pools[pool] = func() end
-
-    -- since this is handled by a ulx command, we assume every forced pool exists
-    for _, pool in pairs(MapVote.Forced) do pools[pool] = true end
-
-    -- check which maps are valid for our mapvote
-    local pooled_maps = {}
-    for map, opts in pairs(MapVote.Maps) do
-        local _type = type(opts.pooled)
-        local shouldadd = false
-
-        -- typechecking; opts.pooled can be either a string, array, or function.
-        if _type == "string" then
-            if pools[opts.pooled] then shouldadd = true end
-        elseif _type == "table" then
-            for _, pool in ipairs(opts.pooled) do
-                if pools[pool] then shouldadd = true end
-                break
-            end
-        elseif _type == "function" then
-            if opts.pooled() then shouldadd = true end
-        end
-
-        if shouldadd and not table.HasValue(pooled_maps, map) then -- not exactly the most optimized code in the world
-            table.insert(pooled_maps, map)
-        end
+    local vote_maps = MapVote.PoolMaps(true, limit, current, cooldown)
+    if #vote_maps == 0 then
+        error("No maps got pooled! Please properly configure your map pools in sv_mapvote_config.lua.\n")
     end
 
-    -- randomly select from our pooled maps and make sure map cooldown is handled 
-    local vote_maps = {}
-    if #pooled_maps > 0 then
-        for _, map in RandomPairs(pooled_maps) do
-            if not current or (current and curmap ~= map) then
-                if not cooldown or (cooldown and not table.HasValue(recentmaps, map)) then
-                    table.insert(vote_maps, map)
-                    if limit and #vote_maps >= limit then break end
-                end
-            end
-        end
-    else
-        error("No maps got pooled - see MapVote.Pools in sv_mapvote_config.lua for more information.\n")
-    end
-    
-    local downloaded = file.Find("maps/*.bsp", "GAME")
     net.Start("RAM_MapVoteStart")
         net.WriteUInt(#vote_maps, 32)
         for _, map in pairs(vote_maps) do net.WriteString(map) end
