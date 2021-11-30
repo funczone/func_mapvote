@@ -14,9 +14,10 @@ MapVote.Config = {
     MapLimit = 24,           -- number, the number of maps shown on the vote screen.
     TimeLimit = 28,          -- number, how long the vote is shown for.
     AllowCurrentMap = false, -- boolean, to allow a the current map in the map vote list.
-    ExtraVotePower = 2,      -- number, how much extra vote power a user has
+    ExtraVotePower = 2,      -- number, how much extra vote power to give certain users
+    PlayerTolerance = nil,   -- number, how "tolerant" we are of maps with configured player counts (see the size value in the maps table below). setting this to nil will pool maps regardless of player count. 
     Previews = {             -- table, preview settings
-        Enabled = true,             -- boolean, are previews enabled?
+        Enabled = false,            -- boolean, are previews enabled?
         ImageExtension = "jpg",     -- string, the image extension each map preview is formatted as
         URL = "https://example.com/assets/maps/", -- string, a folder where the images are hosted
         InitializeWithCurrentMap = false -- boolean, whether or not we initalize the mapvote preview image with our current map (by default, it is a checkerboard image)
@@ -79,8 +80,10 @@ The user will download each map as they are loaded on the server; a fallback map
 -- example
 MapVote.Maps = {
     ["ttt_skyscraper"] = {
-        id = "253328815",  -- string. this is the maps workshop id.
-        pooled = "general" -- string, array of strings, or function. this is in which pool the map is pooled. if a function is passed, returning `true` will add it to the pool.
+        id = "253328815",   -- string. this is the maps workshop id.
+        description = "A map based in a skyscraper.", -- string, a small description of the map. this will go in a panel placed underneath the map preview.
+        pooled = "general", -- string, array of strings, or function. this is in which pool the map is pooled. if a function is passed, returning `true` will add it to the pool.
+        size = 8,           -- number, the amount of players intended to play on this map. also see MapVote.Config.PlayerTolerance.
     },
     ["ttt_xmas_nipperhouse"] = {
         id = "1149578586",
