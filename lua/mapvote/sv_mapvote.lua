@@ -48,16 +48,16 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
 
     local curmap = game.GetMap()
     local curply = #player.GetAll()
-    local pools = {}
+
+    local data = { -- for debug purposes
+        pools = {},
+        pooled = {},
+        undownloaded = {}
+    }
 
     -- Check (and force) our pool values.
-    for pool, test in pairs(MapVote.Pools) do pools[pool] = test() end
-    for _, pool in pairs(MapVote.Forced)   do pools[pool] = true   end
-
-    local maps = {
-        pooled = {},
-        undownloaded = {} -- for debug purposes
-    }
+    for pool, test in pairs(MapVote.Pools) do data.pools[pool] = test() end
+    for _, pool in pairs(MapVote.Forced) do data.pools[pool] = true end
 
     --[[
         Next, check which maps are valid to be pooled.
@@ -73,7 +73,7 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
 
         -- Next, check if the server has this map downloaded. This will NOT disallow the map from being pooled unless in strict mode.
         if not table.HasValue(downloaded, map .. ".bsp") then
-            table.insert(maps.undownloaded, map)
+            table.insert(data.undownloaded, map)
             if strict then
                 continue
             end
@@ -85,10 +85,10 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
         -- Next, check if the map is in a valid pool. `opts.pooled` can be either a string, array, or function.
         local _type = type(opts.pooled)
         if _type == "string" then
-            if pools[opts.pooled] then shouldadd = true end
+            if data.pools[opts.pooled] then shouldadd = true end
         elseif _type == "table" then
             for _, pool in ipairs(opts.pooled) do
-                if pools[pool] then
+                if data.pools[pool] then
                     shouldadd = true
                     break
                 end
@@ -106,27 +106,30 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
         end
 
         -- Finally, add the map to the pool if it should be added.
-        if shouldadd and not table.HasValue(maps.pooled, map) then
-            table.insert(maps.pooled, map)
+        if shouldadd and not table.HasValue(data.pooled, map) then
+            table.insert(data.pooled, map)
         end
 
-        if #maps.pooled >= limit then break end
+        if #data.pooled >= limit then break end
     end
 
     if _debug then
         return maps
     end
-    return maps.pooled
+    return data.pooled
 end
 
 concommand.Add("mapvote_debug", function(ply, cmd, args, argsstr)
-    local maps = MapVote.PoolMaps(false, nil, nil, nil, args[1] == "1", true)
-    print("[MapVote] === " .. #maps.pooled .. " POOLABLE MAPS ===")
-    print(table.concat(maps.pooled, ", "))
+    local data = MapVote.PoolMaps(false, nil, nil, nil, args[1] == "1", true)
+    print("[MapVote] === " .. #data.pools .. " POOLS ===")
+    print("[MapVote] " .. table.concat(table.GetKeys(data.pools), ", "))
 
-    if #maps.undownloaded > 0 then
-        print("\n[MapVote] WARNING: " .. #maps.undownloaded .. " maps are not located on the server!")
-        print(table.concat(maps.undownloaded, ", "))
+    print("[MapVote] === " .. #data.pooled .. " POOLABLE MAPS ===")
+    print("[MapVote] " .. table.concat(data.pooled, ", "))
+
+    if #data.undownloaded > 0 then
+        print("\n[MapVote] WARNING: " .. #data.undownloaded .. " maps are not located on the server!")
+        print(table.concat(data.undownloaded, ", "))
     end
 end, nil, "Prints some debug information about the currently possibly-pooled maps.\nPass \"1\" as an argument to ignore the current player count.")
 
