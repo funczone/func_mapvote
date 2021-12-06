@@ -23,6 +23,20 @@ net.Receive("RAM_MapVoteUpdate", function(len, ply)
     end
 end)
 
+local function log(...)
+    local args = {...} -- varargs are stupid
+    local last_color = Color(255, 255, 255)
+    MsgC(MapVote.Color, "[MapVote] ", last_color)
+    for _, v in ipairs(args) do
+        if IsColor(v) then
+            last_color = v
+        else
+            MsgC(last_color, v)
+        end
+    end
+    MsgC("\n")
+end
+
 local recentmaps = {}
 if file.Exists("mapvote/recentmaps.txt", "DATA") then recentmaps = util.JSONToTable(file.Read("mapvote/recentmaps.txt", "DATA")) end
 
@@ -114,24 +128,35 @@ function MapVote.PoolMaps(strict, limit, addcurrent, cooldown, ignoreplys, _debu
     end
 
     if _debug then
-        return maps
+        table.sort(data.pooled)
+        return data
     end
     return data.pooled
 end
 
 concommand.Add("mapvote_debug", function(ply, cmd, args, argsstr)
     local data = MapVote.PoolMaps(false, nil, nil, nil, args[1] == "1", true)
-    print("[MapVote] === " .. #data.pools .. " POOLS ===")
-    print("[MapVote] " .. table.concat(table.GetKeys(data.pools), ", "))
+    local pools = {}
+    for pool, isenabled in pairs(data.pools) do
+        if isenabled then table.insert(pools, pool) end
+    end
 
-    print("[MapVote] === " .. #data.pooled .. " POOLABLE MAPS ===")
-    print("[MapVote] " .. table.concat(data.pooled, ", "))
+    log("=== " .. #pools .. " POOLS ===")
+    log(table.concat(pools, ", "))
+
+    log("=== " .. #data.pooled .. " POOLABLE MAPS ===")
+    log(table.concat(data.pooled, ", "))
+
+    local limit = MapVote.Config.MapLimit + MapVote.Config.MapsBeforeRevote
+    if #data.pooled < limit then
+        log(Color(255, 0, 0), "WARNING: ", Color(255, 255, 255), "Pooled map size is LESS than the configured map limit + map cooldown (" .. #data.pooled .. "/" .. limit .. ")!")
+    end
 
     if #data.undownloaded > 0 then
-        print("\n[MapVote] WARNING: " .. #data.undownloaded .. " maps are not located on the server!")
-        print(table.concat(data.undownloaded, ", "))
+        log(Color(255, 0, 0), "WARNING: ", Color(255, 255, 255), #data.undownloaded .. " maps are not located on the server!")
+        log(table.concat(data.undownloaded, ", "))
     end
-end, nil, "Prints some debug information about the currently possibly-pooled maps.\nPass \"1\" as an argument to ignore the current player count.")
+end, nil, "Prints some debug information about the currently possibly-pooled maps. Use this command to assess your current map pool.\nPass \"1\" as an argument to ignore the current player count.")
 
 function MapVote.Start(length, current, limit)
     length = length or MapVote.Config.TimeLimit or 28
